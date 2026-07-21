@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>darkpattern.eu — Cookie Banner Wall of Shame</title>
+  <meta name="description" content="Documenting websites that use dark patterns to manipulate cookie consent in violation of EU law.">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+  </script>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg-alt: #f6f6f6;
+      --text: #1a1a1a;
+      --text-muted: #555;
+      --text-faint: #767676;
+      --accent: #0b4cbf;
+      --accent-hover: #083a94;
+      --warn: #b33;
+      --border: #ddd;
+      --border-strong: #333;
+      --table-hover: #f9f9f9;
+      --badge-bg: #eee;
+      --badge-text: #444;
+      --green: #217821;
+      --check: #217821;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #2b2b2b;
+        --bg-alt: #353535;
+        --text: #ececec;
+        --text-muted: #c0c0c0;
+        --text-faint: #9a9a9a;
+        --accent: #7cacf8;
+        --accent-hover: #a8c8ff;
+        --warn: #e88;
+        --border: #444;
+        --border-strong: #999;
+        --table-hover: #333;
+        --badge-bg: #3a3a3a;
+        --badge-text: #ccc;
+        --green: #6ec96e;
+        --check: #6ec96e;
+      }
+    }
+
+    [data-theme="dark"] {
+      --bg: #2b2b2b;
+      --bg-alt: #353535;
+      --text: #ececec;
+      --text-muted: #c0c0c0;
+      --text-faint: #9a9a9a;
+      --accent: #7cacf8;
+      --accent-hover: #a8c8ff;
+      --warn: #e88;
+      --border: #444;
+      --border-strong: #999;
+      --table-hover: #333;
+      --badge-bg: #3a3a3a;
+      --badge-text: #ccc;
+      --green: #6ec96e;
+      --check: #6ec96e;
+    }
+
+    [data-theme="light"] {
+      --bg: #ffffff;
+      --bg-alt: #f6f6f6;
+      --text: #1a1a1a;
+      --text-muted: #555;
+      --text-faint: #767676;
+      --accent: #0b4cbf;
+      --accent-hover: #083a94;
+      --warn: #b33;
+      --border: #ddd;
+      --border-strong: #333;
+      --table-hover: #f9f9f9;
+      --badge-bg: #eee;
+      --badge-text: #444;
+      --green: #217821;
+      --check: #217821;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 0;
+      background: var(--bg);
+      color: var(--text);
+      padding: 0.5rem 1rem;
+      z-index: 100;
+    }
+    .skip-link:focus { top: 0; }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .wrapper {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: var(--accent-hover); text-decoration: underline; }
+
+    /* Header */
+    .site-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--border-strong);
+      padding-bottom: 1rem;
+      margin-bottom: 2rem;
+    }
+    .site-header h1 {
+      font-size: 2rem;
+      color: var(--text);
+    }
+    .site-header h1 span { color: var(--warn); }
+    .site-header nav {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+    .site-header nav a { margin-right: 1.5rem; }
+    #theme-toggle {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0.3rem 0.5rem;
+      line-height: 1;
+    }
+
+    /* Intro */
+    .intro {
+      max-width: 720px;
+      margin-bottom: 2rem;
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+    .intro p { margin: 0.75rem 0; }
+    .intro strong { color: var(--warn); }
+
+    /* Stats */
+    .stats-bar {
+      display: flex;
+      gap: 2rem;
+      margin: 1.5rem 0;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    .stats-bar strong { color: var(--text); }
+
+    /* Section titles */
+    h2.section-title {
+      font-size: 1.2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+      margin: 2rem 0 0.5rem;
+    }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; }
+
+    .shame-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+    }
+    .shame-table thead {
+      text-align: left;
+      border-bottom: 2px solid var(--border-strong);
+    }
+    .shame-table th {
+      padding: 0.6rem 0.5rem;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .shame-table th.pattern-col {
+      text-align: center;
+      max-width: 5rem;
+      white-space: normal;
+      line-height: 1.3;
+    }
+    .shame-table td {
+      padding: 0.6rem 0.5rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .shame-table tbody tr:hover { background: var(--table-hover); }
+    .shame-table .name { font-weight: 600; white-space: nowrap; }
+    .shame-table .name a { color: var(--text); text-decoration: none; }
+    .shame-table .name a:hover { color: var(--warn); }
+    .shame-table .description {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      max-width: 300px;
+    }
+    .shame-table .date {
+      color: var(--text-faint);
+      white-space: nowrap;
+      font-size: 0.85rem;
+    }
+    .shame-table .check {
+      text-align: center;
+      font-size: 1.1rem;
+    }
+    .shame-table .check .yes {
+      color: var(--warn);
+      font-weight: bold;
+    }
+
+    /* What counts */
+    .what-counts ul {
+      margin: 0.75rem 0 0 1.5rem;
+      line-height: 1.8;
+    }
+    .what-counts li { margin-bottom: 0.25rem; }
+
+    /* Footer */
+    .footer-cta {
+      border-top: 2px solid var(--border-strong);
+      padding-top: 1.5rem;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    code {
+      background: var(--bg-alt);
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.85em;
+    }
+
+    /* Mobile */
+    @media (max-width: 700px) {
+      .site-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+      #theme-toggle { position: absolute; top: 2rem; right: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#the-list" class="skip-link">Skip to the list</a>
+
+  <div class="wrapper" role="main">
+
+    <header class="site-header">
+      <div>
+        <h1>dark<span>pattern</span>.eu</h1>
+        <nav aria-label="Main navigation">
+          <a href="#the-list">The List</a>
+          <a href="#what-counts">What Counts</a>
+          <a href="#contribute">Contribute</a>
+        </nav>
+      </div>
+      <button id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode"></button>
+    </header>
+
+    <section class="intro">
+      <p>
+        Under EU law, cookie consent must be <strong>freely given, specific, informed, and unambiguous</strong>.
+        Rejecting tracking cookies should be exactly as easy as accepting them. It almost never is.
+      </p>
+      <p>
+        This is a list of websites that use dark patterns in their cookie consent banners — making
+        rejection deliberately harder, more confusing, or more time-consuming than acceptance.
+        These practices violate the <a href="https://eur-lex.europa.eu/eli/reg/2016/679/oj" target="_blank" rel="noopener">GDPR</a>,
+        the <a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32002L0058" target="_blank" rel="noopener">ePrivacy Directive</a>,
+        and guidance from the <a href="https://www.edpb.europa.eu/our-work-tools/our-documents/guidelines/guidelines-052020-consent-under-regulation-2016679_en" target="_blank" rel="noopener">EDPB</a>.
+      </p>
+      <p>
+        The CJEU ruled in <em>Planet49</em> (C-673/17) that pre-ticked boxes do not constitute valid consent.
+        The <a href="https://www.edpb.europa.eu/our-work-tools/our-documents/report/report-work-undertaken-cookie-banner-taskforce_en" target="_blank" rel="noopener">EDPB Cookie Banner Taskforce</a>
+        confirmed that asymmetric consent flows fail the "freely given" standard. These aren't edge cases. They're the law.
+      </p>
+    </section>
+
+    <h2 class="section-title" id="the-list">The List</h2>
+
+    <div class="table-wrap">
+      <table class="shame-table" aria-label="Sites using dark patterns in cookie consent">
+        <thead>
+          <tr>
+            <th>Site</th>
+            <th class="pattern-col" title="The reject option is buried in sub-menus">Hidden Reject</th>
+            <th class="pattern-col" title="Accept is prominent; reject is a tiny text link">Asymmetric Buttons</th>
+            <th class="pattern-col" title="Consent checkboxes are checked by default">Pre-ticked Boxes</th>
+            <th class="pattern-col" title="Misleading wording to trick users into accepting">Confusing Language</th>
+            <th class="pattern-col" title="Content blocked until cookies are accepted">Forced Action</th>
+            <th class="pattern-col" title="Repeated prompts to accept after user has declined">Nagging</th>
+            <th>Notes</th>
+            <th>Added</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!--
+            To add a site: copy a <tr> block below, fill in the details,
+            and open a pull request. Mark violations with ✕ and clean cells with a dash.
+          -->
+          <tr>
+            <td class="name"><a href="https://www.delfi.ee" target="_blank" rel="noopener">Delfi.ee</a></td>
+            <td class="check"></td>
+            <td class="check"><span class="yes" aria-label="Yes">✕</span></td>
+            <td class="check"></td>
+            <td class="check"><span class="yes" aria-label="Yes">✕</span></td>
+            <td class="check"></td>
+            <td class="check"></td>
+            <td class="description">Prominent blue "NÕUSTUN KÕIGIGA" (Accept All) button next to an outlined "KOHANDA" (Customise) link. Claims 1017 partners. No "Reject All" option on the first layer — users must click through to customise and disable individually.</td>
+            <td class="date">2026-07-21</td>
+          </tr>
+          <tr>
+            <td class="name"><a href="https://www.ekool.eu" target="_blank" rel="noopener">eKool</a></td>
+            <td class="check"><span class="yes" aria-label="Yes">✕</span></td>
+            <td class="check"><span class="yes" aria-label="Yes">✕</span></td>
+            <td class="check"><span class="yes" aria-label="Yes">✕</span></td>
+            <td class="check"><span class="yes" aria-label="Yes">✕</span></td>
+            <td class="check"><span class="yes" aria-label="Yes">✕</span></td>
+            <td class="check"></td>
+            <td class="description">Children's education platform. Filled blue "Consent" button vs outlined "Manage options". 210 partners, 46 vendors pre-enabled via "Legitimate interest" toggle. Quantcast cookies lasting 1825 days. No "Reject All" — users must disable each vendor individually.</td>
+            <td class="date">2026-07-21</td>
+          </tr>
+          <tr>
+            <td class="name"><a href="https://www.apollokino.ee" target="_blank" rel="noopener">Apollo Kino</a></td>
+            <td class="check"></td>
+            <td class="check"><span class="yes" aria-label="Yes">✕</span></td>
+            <td class="check"></td>
+            <td class="check"></td>
+            <td class="check"></td>
+            <td class="check"></td>
+            <td class="description">Large orange "Nõustun kõigi küpsistega" (Accept All) button vs grey outlined "Keeldu kõigist" (Reject All) and "Tingimused ja kohandamine" (Customise). Accept is visually dominant with colour and size.</td>
+            <td class="date">2026-07-21</td>
+          </tr>
+          <tr>
+            <td class="name"><a href="https://elamusspa.ee" target="_blank" rel="noopener">Elamus Spa</a></td>
+            <td class="check"></td>
+            <td class="check"></td>
+            <td class="check"><span class="yes" aria-label="Yes">✕</span></td>
+            <td class="check"><span class="yes" aria-label="Yes">✕</span></td>
+            <td class="check"></td>
+            <td class="check"></td>
+            <td class="description">Cookiebot banner with "Eelistused", "Statistika", and "Turustamine" toggles all pre-enabled. Only "Vajalik" is labelled as required. "LUBA KÕIK" (Allow All) and "LUBA VALIK" (Allow Selection) but no "Reject All" — users must manually disable each toggle.</td>
+            <td class="date">2026-07-21</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="section-title" id="what-counts">What Counts as a Dark Pattern?</h2>
+
+    <section class="intro what-counts">
+      <p>We document cookie consent interfaces where the path to rejection is meaningfully harder than acceptance:</p>
+      <ul>
+        <li><strong>Hidden Reject</strong> — reject is buried behind extra screens or settings menus</li>
+        <li><strong>Asymmetric Buttons</strong> — accept is a large coloured button; reject is a small text link</li>
+        <li><strong>Pre-ticked Boxes</strong> — tracking categories enabled by default (illegal per <em>Planet49</em>)</li>
+        <li><strong>Confusing Language</strong> — wording designed to mislead users into accepting</li>
+        <li><strong>Forced Action</strong> — content blocked until cookies are accepted (cookie walls)</li>
+        <li><strong>Nagging</strong> — repeated prompts to accept after the user has already declined</li>
+      </ul>
+    </section>
+
+    <footer class="footer-cta" id="contribute">
+      <p>
+        <strong>Spotted a dark pattern?</strong> Edit <code>index.html</code>, add a row to the table,
+        and open a pull request. Mark each applicable violation with <code>✕</code>. Include a short description
+        of the consent flow. Screenshots in <code>assets/img/</code> are welcome but not required.
+      </p>
+      <p>
+        We accept corrections from listed companies — open a PR with evidence of a fix and we'll update or remove the entry.
+      </p>
+      <p style="color: var(--text-faint); font-size: 0.85rem; margin-top: 1rem;">
+        Maintained on <a href="https://github.com/YOUR_USERNAME/darkpattern-eu">GitHub</a> · Hosted with GitHub Pages · No cookies, no tracking, no irony.
+      </p>
+    </footer>
+
+  </div>
+
+  <script>
+    (function() {
+      function isDark() {
+        var t = document.documentElement.getAttribute('data-theme');
+        return t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      }
+      function updateIcon() {
+        var btn = document.getElementById('theme-toggle');
+        if (btn) btn.textContent = isDark() ? '☀️' : '🌙';
+      }
+      window.toggleTheme = function() {
+        var next = isDark() ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        updateIcon();
+      };
+      updateIcon();
+    })();
+  </script>
+</body>
+</html>
